@@ -1,0 +1,1 @@
+# Algoritmo de busca (PSR / Backtracking) com yield
