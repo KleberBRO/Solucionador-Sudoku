@@ -1,1 +1,1 @@
-# Algoritmo de busca (PSR / Backtracking) com yield
+# Algoritmo de busca PSR VMR com yield

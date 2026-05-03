@@ -10,9 +10,9 @@ UI_FONT = pygame.font.SysFont("arial", 20)
 
 def draw_grid(screen: pygame.Surface):
     """Desenha a grade do jogo na tela."""
-    for i in range(10):
+    for i in range(5):
         # A cada terceira linha, a espessura é maior
-        thickness = 3 if i % 3 == 0 else 1
+        thickness = 3 if i % 2 == 0 else 1
         
         # linhas horizontais
         pygame.draw.line(screen, BLACK, (0, i * CELL_SIZE), (BOARD_SIZE, i * CELL_SIZE), thickness)
@@ -21,8 +21,8 @@ def draw_grid(screen: pygame.Surface):
         
 def draw_numbers(screen: pygame.Surface, board: list[list[int]]):
     """Desenha os números do tabuleiro na tela."""
-    for i in range(9):
-        for j in range(9):
+    for i in range(4):
+        for j in range(4):
             if board[i][j] != 0:
                 text = FONT.render(str(board[i][j]), True, BLACK)
                 #Cálculo da posição para centralizar o número na célula
@@ -50,12 +50,12 @@ def draw_highlight(screen: pygame.Surface, selected_cell: tuple[int, int] | None
     # Destaca a coluna
     pygame.draw.rect(screen, HIGHLIGHT, (col * CELL_SIZE, 0, CELL_SIZE, BOARD_SIZE))
     
-    # Destaca o bloco 3x3
-    box_x = (col // 3) * 3 * CELL_SIZE
-    box_y = (row // 3) * 3 * CELL_SIZE
-    pygame.draw.rect(screen, HIGHLIGHT, (box_x, box_y, 3 * CELL_SIZE, 3 * CELL_SIZE))
-    
-    
+    # Destaca o bloco 2x2
+    box_x = (col // 2) * 2 * CELL_SIZE
+    box_y = (row // 2) * 2 * CELL_SIZE
+    pygame.draw.rect(screen, HIGHLIGHT, (box_x, box_y, 2 * CELL_SIZE, 2 * CELL_SIZE))
+
+
 def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None):
     """Função central para atualizar o frame atual."""
     screen.fill(WHITE)

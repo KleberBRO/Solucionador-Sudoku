@@ -11,15 +11,10 @@ def main():
     clock = pygame.time.Clock()
 
     test_board = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
+        [0, 2, 0, 0],
+        [0, 0, 3, 0],
+        [0, 0, 0, 1],
+        [4, 0, 0, 0]
     ]
 
     selected = None
@@ -61,10 +56,14 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if selected:
                     row, col = selected
-                    if event.unicode.isdigit() and event.unicode != '0':
+                    if event.unicode in ['1', '2', '3', '4']:
                         num = int(event.unicode)
                         if e_valido(test_board, num, (row, col)):
                             test_board[row][col] = num
+                        else:
+                            pygame.draw.rect(screen, DARK_GRAY, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 3)
+                            pygame.display.flip()
+                            pygame.time.delay(200)
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE or event.unicode == '0':
                         test_board[row][col] = 0
 
