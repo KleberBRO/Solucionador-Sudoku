@@ -54,16 +54,42 @@ def draw_highlight(screen: pygame.Surface, selected_cell: tuple[int, int] | None
     box_x = (col // 2) * 2 * CELL_SIZE
     box_y = (row // 2) * 2 * CELL_SIZE
     pygame.draw.rect(screen, HIGHLIGHT, (box_x, box_y, 2 * CELL_SIZE, 2 * CELL_SIZE))
+    
+def draw_algo_cursor(screen: pygame.Surface, algo_state: tuple[int, int, str, int] | None):
+    """Desenha o feedback visual do algoritmo com base na ação atual."""
+    if not algo_state:
+        return
+        
+    row, col, action, num = algo_state
+    
+    # Define as cores baseadas no que o algoritmo está fazendo
+    if action == "TENTANDO":
+        color = BLUE       # Azul para tentativas
+    elif action == "BACKTRACK":
+        color = RED        # Vermelho para retrocesso
+    else: # "COLOCADO"
+        color = GREEN      # Verde para sucesso provisório
+        
+    # Desenha a borda da célula
+    pygame.draw.rect(screen, color, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 5)
+    
+    # Se estiver apenas tentando, o número não está no tabuleiro ainda. Desenhamos ele provisoriamente.
+    if action == "TENTANDO":
+        text = FONT.render(str(num), True, color)
+        x = col * CELL_SIZE + (CELL_SIZE - text.get_width()) // 2
+        y = row * CELL_SIZE + (CELL_SIZE - text.get_height()) // 2
+        screen.blit(text, (x, y))
 
 
-def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None):
+def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None, algo_state: tuple[int, int, str, int] | None):
     """Função central para atualizar o frame atual."""
     screen.fill(WHITE)
     draw_highlight(screen, selected_cell)
     draw_grid(screen)
     draw_numbers(screen, board)
     draw_selection(screen, selected_cell)
-    
+    draw_algo_cursor(screen, algo_state)
+
 class Button:
     def __init__(self, x: int, y: int, width: int, height: int, text: str):
         self.rect = pygame.Rect(x, y, width, height)
