@@ -1,7 +1,7 @@
 import pygame
 import sys
 from constants import *
-from interface import draw_all, Button, Slider
+from interface import draw_all, Button, Slider, gerar_texto_log
 from core import e_valido
 from solucionador import resolver_sudoku
 
@@ -10,6 +10,8 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku Solver 4x4")
     clock = pygame.time.Clock()
+    log_mensagens = []
+    MAX_LOG_LINES = 10
 
     test_board = [
         [0, 2, 0, 0],
@@ -79,6 +81,12 @@ def main():
                 try:
                     current_algo_state = next(solver_generator)
                     last_update_time = current_time
+                    msg = gerar_texto_log(current_algo_state)
+                    if msg:
+                        log_mensagens.append(msg)
+                        if len(log_mensagens) > MAX_LOG_LINES:
+                            log_mensagens.pop(0)
+                            
                 except StopIteration:
                     # O algoritmo terminou (encontrou solução ou falhou)
                     solver_generator = None
@@ -87,7 +95,7 @@ def main():
                     btn_play_pause.update_text("Concluído", GRAY)
 
         # Renderização
-        draw_all(screen, test_board, selected, current_algo_state)
+        draw_all(screen, test_board, selected, current_algo_state, log_mensagens)
         btn_play_pause.draw(screen)
         slider_speed.draw(screen)
         

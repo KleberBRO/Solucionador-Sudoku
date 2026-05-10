@@ -86,28 +86,6 @@ def draw_algo_cursor(screen: pygame.Surface, algo_state: tuple[int, int, str, in
         y = row * CELL_SIZE + (CELL_SIZE - text.get_height()) // 2
         screen.blit(text, (x, y))
         
-def draw_status_text(screen: pygame.Surface, algo_state: tuple[int, int, str, int] | None):
-    """Escreve na tela o que o algoritmo está pensando."""
-    if not algo_state:
-        return
-        
-    row, col, action, num = algo_state
-    status_msg = ""
-    
-    if action == "VMR_ESCOLHA":
-        status_msg = f"VMR escolheu pos ({row},{col}) - Apenas {num} opções!"
-    elif action == "TENTANDO":
-        status_msg = f"Testando número {num} na pos ({row},{col})..."
-    elif action == "INVALIDO":
-        status_msg = f"Número {num} inválido! Fere as regras."
-    elif action == "COLOCADO":
-        status_msg = f"Número {num} colocado com sucesso."
-    elif action == "BACKTRACK":
-        status_msg = f"Sem saída! Backtrack na pos ({row},{col})."
-        
-    text_surf = UI_FONT.render(status_msg, True, (50, 50, 50))
-    # Colocando logo abaixo do tabuleiro (ajuste o Y se sobrepor os botões)
-    screen.blit(text_surf, (10, BOARD_SIZE + 5))
     
 def draw_mrv_hints(screen: pygame.Surface, board: list[list[int]]):
     """Desenha a quantidade de possibilidades restantes em células vazias."""
@@ -122,8 +100,46 @@ def draw_mrv_hints(screen: pygame.Surface, board: list[list[int]]):
                 y = i * CELL_SIZE + 5
                 screen.blit(text, (x, y))
 
+def gerar_texto_log(algo_state):
+    """Converte o estado do algoritmo em uma string curta para o log."""
+    if not algo_state: return None
+    row, col, action, num = algo_state
+    
+    if action == "VMR_ESCOLHA":
+        return f"VMR -> ({row},{col}) [{num} opc]"
+    elif action == "TENTANDO":
+        return f"Testando {num} em ({row},{col})"
+    elif action == "INVALIDO":
+        return f"{num} fere restrições!"
+    elif action == "COLOCADO":
+        return f"{num} inserido com sucesso"
+    elif action == "BACKTRACK":
+        return f"<- Backtrack em ({row},{col})"
+    return None
 
-def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None, algo_state: tuple[int, int, str, int] | None):
+def draw_log_panel(screen, log_mensagens):
+    """Desenha uma caixa com o histórico de ações do algoritmo."""
+    # Define a área do log (exemplo: lado direito do tabuleiro)
+    log_x = BOARD_SIZE + 20
+    log_y = 50
+    
+    # Título do Log
+    titulo = UI_FONT.render("LOG:", True, BLACK)
+    screen.blit(titulo, (log_x, log_y - 30))
+
+    # Desenha cada linha do log
+    for i, msg in enumerate(log_mensagens):
+        cor = (100, 100, 100) # Cinza padrão
+        
+        # Opcional: Colorir a última mensagem para destaque
+        if i == len(log_mensagens) - 1:
+            cor = BLUE
+            
+        msg_surf = UI_FONT.render(msg, True, cor)
+        screen.blit(msg_surf, (log_x, log_y + (i * 25)))
+
+
+def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None, algo_state: tuple[int, int, str, int] | None, log_mensagens: list[str]):
     """Função central para atualizar o frame atual."""
     screen.fill(WHITE)
     draw_highlight(screen, selected_cell)
@@ -131,8 +147,8 @@ def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tupl
     draw_numbers(screen, board)
     draw_selection(screen, selected_cell)
     draw_algo_cursor(screen, algo_state)
-    draw_status_text(screen, algo_state)
     draw_mrv_hints(screen, board)
+    draw_log_panel(screen, log_mensagens)
     
 
 class Button:

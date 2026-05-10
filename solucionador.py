@@ -17,7 +17,7 @@ def encontrar_vazio_vmr(tabuleiro: list[list[int]]) -> tuple[int, int] | None:
                 if possibilidades < min_possibilidades:
                     min_possibilidades = possibilidades
                     melhor_pos = (i, j)
-                    if min_possibilidades <= 1:
+                    if min_possibilidades <= 0:
                         return melhor_pos
     return melhor_pos
 
@@ -46,7 +46,6 @@ def resolver_sudoku(tabuleiro: list[list[int]]):
             tabuleiro[row][col] = 0
             yield (row, col, "BACKTRACK", 0)
         else:
-            # Mostra que o número testado fere as regras!
             yield (row, col, "INVALIDO", num)
 
     return False
