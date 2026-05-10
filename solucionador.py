@@ -29,21 +29,24 @@ def resolver_sudoku(tabuleiro: list[list[int]]):
 
     row, col = pos
 
+    # Mostra qual célula o VMR escolheu e quantas opções ela tinha
+    opcoes = contar_valores_possiveis(tabuleiro, pos)
+    yield (row, col, "VMR_ESCOLHA", opcoes)
+
     for num in range(1, 5):
-        # 1. ESTADO: Mostra o algoritmo testando o número (antes mesmo de saber se é válido)
         yield (row, col, "TENTANDO", num)
 
         if e_valido(tabuleiro, num, (row, col)):
             tabuleiro[row][col] = num
-            # 2. ESTADO: Mostra que o número foi aceito e colocado
             yield (row, col, "COLOCADO", num)
             
             if (yield from resolver_sudoku(tabuleiro)):
                 return True
             
-            # Backtracking
             tabuleiro[row][col] = 0
-            # 3. ESTADO: Mostra que deu erro na frente e está desfazendo (backtracking)
             yield (row, col, "BACKTRACK", 0)
+        else:
+            # Mostra que o número testado fere as regras!
+            yield (row, col, "INVALIDO", num)
 
     return False

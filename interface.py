@@ -1,12 +1,11 @@
 # Funções de desenho e componentes visuais
 import pygame
 from constants import *
+from solucionador import contar_valores_possiveis
 
 pygame.font.init()
 FONT = pygame.font.SysFont("arial", 35)
 UI_FONT = pygame.font.SysFont("arial", 20)
-
-
 
 def draw_grid(screen: pygame.Surface):
     """Desenha a grade do jogo na tela."""
@@ -62,23 +61,66 @@ def draw_algo_cursor(screen: pygame.Surface, algo_state: tuple[int, int, str, in
         
     row, col, action, num = algo_state
     
-    # Define as cores baseadas no que o algoritmo está fazendo
+    text_to_draw = str(num)
+
     if action == "TENTANDO":
-        color = BLUE       # Azul para tentativas
+        color = BLUE
+    elif action == "INVALIDO":
+        color = (255, 0, 0)
+    elif action == "COLOCADO":
+        color = (0, 255, 0)  # Verde para sucesso provisório
     elif action == "BACKTRACK":
-        color = RED        # Vermelho para retrocesso
-    else: # "COLOCADO"
-        color = GREEN      # Verde para sucesso provisório
+        color = (128, 0, 128)  # Roxo indicando retrocesso
+        text_to_draw = "X" # Coloca um X para indicar que limpou a célula
+    elif action == "VMR_ESCOLHA":
+        color = (255, 165, 0) # Laranja: mostra a célula escolhida pelo VMR
+        text_to_draw = "?" # Indica que está avaliando
         
     # Desenha a borda da célula
     pygame.draw.rect(screen, color, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 5)
     
     # Se estiver apenas tentando, o número não está no tabuleiro ainda. Desenhamos ele provisoriamente.
-    if action == "TENTANDO":
-        text = FONT.render(str(num), True, color)
+    if action != "COLOCADO" and action != "BACKTRACK":
+        text = FONT.render(text_to_draw, True, color)
         x = col * CELL_SIZE + (CELL_SIZE - text.get_width()) // 2
         y = row * CELL_SIZE + (CELL_SIZE - text.get_height()) // 2
         screen.blit(text, (x, y))
+        
+def draw_status_text(screen: pygame.Surface, algo_state: tuple[int, int, str, int] | None):
+    """Escreve na tela o que o algoritmo está pensando."""
+    if not algo_state:
+        return
+        
+    row, col, action, num = algo_state
+    status_msg = ""
+    
+    if action == "VMR_ESCOLHA":
+        status_msg = f"VMR escolheu pos ({row},{col}) - Apenas {num} opções!"
+    elif action == "TENTANDO":
+        status_msg = f"Testando número {num} na pos ({row},{col})..."
+    elif action == "INVALIDO":
+        status_msg = f"Número {num} inválido! Fere as regras."
+    elif action == "COLOCADO":
+        status_msg = f"Número {num} colocado com sucesso."
+    elif action == "BACKTRACK":
+        status_msg = f"Sem saída! Backtrack na pos ({row},{col})."
+        
+    text_surf = UI_FONT.render(status_msg, True, (50, 50, 50))
+    # Colocando logo abaixo do tabuleiro (ajuste o Y se sobrepor os botões)
+    screen.blit(text_surf, (10, BOARD_SIZE + 5))
+    
+def draw_mrv_hints(screen: pygame.Surface, board: list[list[int]]):
+    """Desenha a quantidade de possibilidades restantes em células vazias."""
+    hint_font = pygame.font.SysFont("arial", 12)
+    for i in range(4):
+        for j in range(4):
+            if board[i][j] == 0:
+                # Usa a função do seu solucionador para ver quantas opções restam
+                opcoes = contar_valores_possiveis(board, (i, j))
+                text = hint_font.render(f"{opcoes} opções", True, (150, 150, 150)) # Cinza claro
+                x = j * CELL_SIZE + 5
+                y = i * CELL_SIZE + 5
+                screen.blit(text, (x, y))
 
 
 def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tuple[int, int] | None, algo_state: tuple[int, int, str, int] | None):
@@ -89,6 +131,9 @@ def draw_all(screen: pygame.Surface, board: list[list[int]], selected_cell: tupl
     draw_numbers(screen, board)
     draw_selection(screen, selected_cell)
     draw_algo_cursor(screen, algo_state)
+    draw_status_text(screen, algo_state)
+    draw_mrv_hints(screen, board)
+    
 
 class Button:
     def __init__(self, x: int, y: int, width: int, height: int, text: str):

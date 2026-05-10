@@ -3,7 +3,7 @@ import sys
 from constants import *
 from interface import draw_all, Button, Slider
 from core import e_valido
-from solucionador import resolver_sudoku  # Importação adicionada
+from solucionador import resolver_sudoku
 
 def main():
     pygame.init()
@@ -26,8 +26,8 @@ def main():
     last_update_time = pygame.time.get_ticks()
     current_algo_state = None  # (row, col, action, num)
 
-    btn_play_pause = Button(20, BOARD_SIZE + 15, 100, 30, "Iniciar")
-    slider_speed = Slider(150, BOARD_SIZE + 25, 200, 10, min_val=0, max_val=500, start_val=100)
+    btn_play_pause = Button(20, BOARD_SIZE + 35, 100, 30, "Iniciar")
+    slider_speed = Slider(150, BOARD_SIZE + 45, 200, 10, min_val=0, max_val=1000, start_val=100)
 
     running = True
     while running:
