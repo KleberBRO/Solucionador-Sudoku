@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pygame
 import sys
 from constants import *

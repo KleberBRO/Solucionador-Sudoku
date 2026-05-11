@@ -1,4 +1,6 @@
+from __future__ import annotations
 # Funções de desenho e componentes visuais
+
 import pygame
 from constants import *
 from solucionador import contar_valores_possiveis

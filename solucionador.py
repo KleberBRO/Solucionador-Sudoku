@@ -1,3 +1,4 @@
+from __future__ import annotations
 from core import e_valido
 
 def contar_valores_possiveis(tabuleiro: list[list[int]], pos: tuple[int, int]) -> int:

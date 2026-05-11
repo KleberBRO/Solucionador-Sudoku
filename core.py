@@ -1,3 +1,4 @@
+from __future__ import annotations
 # regras do jogo (validação, busca de vazios)
 
 def encontrar_vazio(tabuleiro: list[list[int]]) -> tuple[int, int] | None:
